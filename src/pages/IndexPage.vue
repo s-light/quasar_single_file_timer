@@ -16,7 +16,7 @@
                 :value="thetime.elapsed_percentage"
                 size="99vh"
                 :thickness="1.0"
-                :animation-speed="thetime.update_interval/2"
+                :animation-speed="0"
                 color="primary"
                 track-color="secondary"
                 show-value
@@ -25,6 +25,7 @@
                 instant-feedback
             >
                 <!--
+                :animation-speed="thetime.update_interval/2"
                     :color="color_active"
                     :track-color="color_inactive"
                     :thickness="0.1"
@@ -41,11 +42,15 @@
 import { defineComponent, ref, computed } from 'vue'
 import { useQuasar, date } from 'quasar'
 import { useTheTimeStore } from 'stores/thetime'
+import bell_sound from 'assets/01__04__s-light__singing_bowl_-_single_strike_4.ogg'
 
 export default defineComponent({
     name: 'IndexPage',
     setup () {
         const $q = useQuasar()
+
+        const audio_bell = new Audio(bell_sound)
+        console.log(`audio_bell ${audio_bell}`);
 
         const thetime = useTheTimeStore()
 
@@ -54,7 +59,7 @@ export default defineComponent({
             // console.log("stop!");
             clearInterval(thetime.timer_id)
 
-            thetime.now = thetime.end
+            thetime.now = thetime.end + 1000
             thetime.running = false
         }
 
@@ -65,6 +70,7 @@ export default defineComponent({
             if (thetime.remaining <= thetime.update_interval) {
                 countdown_stop()
                 alarm_start()
+                // thetime.alarm_start()
             }
         }
 
@@ -103,7 +109,9 @@ export default defineComponent({
         const remaining_formated = computed(() => {
             // we have to substract a hour
             // i do not remember why exactly - just that i stumbled accross this before..
-            return date.formatDate(thetime.remaining - (60*60*1000), 'HH:mm:ss.S')
+            // we also add 1 second - this way we count down to 0...
+            return date.formatDate(thetime.remaining - (60*60*1000) + 1000, 'HH:mm:ss')
+            // return date.formatDate(thetime.remaining - (60*60*1000), 'HH:mm:ss.S')
         })
 
 
@@ -124,6 +132,7 @@ export default defineComponent({
 
         const alarm_start = () => {
             // console.log("alarm_start")
+            audio_bell.play()
             thetime.alarm_color_orig = $q.dark.isActive
             thetime.alarm_running = thetime.alarm_duration
             thetime.alarm_timer_id = window.setInterval(alarm_update, thetime.alarm_interval)

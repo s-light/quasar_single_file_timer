@@ -5,7 +5,7 @@ export const useTheTimeStore = defineStore('thetime', {
         duration: 10 * 1000,
         start: Date.now(),
         end: Date.now() + 10 * 1000,
-        update_interval: 100,
+        update_interval: 50,
         running: false,
         timer_id: null,
         // update helper...
@@ -63,6 +63,30 @@ export const useTheTimeStore = defineStore('thetime', {
         // },
         // stop () {
         //     this.running = false;
+        // },
+        // alarm
+        // alarm_toggle_colors: () => {
+        //     $q.dark.toggle()
+        // },
+        // alarm_update: () => {
+        //     // console.log("alarm_update")
+        //     alarm_toggle_colors()
+        //     this.alarm_running -= this.alarm_interval
+        //     if (this.alarm_running <= 0) {
+        //         alarm_stop()
+        //     }
+        // },
+        // alarm_start: () => {
+        //     // console.log("alarm_start")
+        //     this.alarm_color_orig = $q.dark.isActive
+        //     this.alarm_running = this.alarm_duration
+        //     this.alarm_timer_id = window.setInterval(alarm_update, this.alarm_interval)
+        // },
+        // alarm_stop: () => {
+        //     // console.log("alarm_stop")
+        //     window.clearInterval(this.alarm_timer_id)
+        //     $q.dark.set(this.alarm_color_orig)
+        //     this.alarm_running = false
         // },
     }
 })
