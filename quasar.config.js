@@ -27,8 +27,7 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-webpack/boot-files
     boot: [
-
-
+        'addressbar-color',
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
@@ -93,12 +92,17 @@ module.exports = configure(function (ctx) {
         type: 'http'
       },
       port: 8080,
-      open: true // opens browser window automatically
+      // opens browser window automatically
+      open: false
     },
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-framework
     framework: {
-      config: {},
+      config: {
+          notify: {
+              // https://quasar.dev/quasar-plugins/notify
+          },
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
@@ -111,7 +115,13 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+          'AddressbarColor',
+          'AppFullscreen',
+          'LocalStorage',
+          'SessionStorage',
+          'Notify',
+      ]
     },
 
     // animations: 'all', // --- includes all animations
