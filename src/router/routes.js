@@ -1,14 +1,17 @@
 
 export const childrenCommon = [
     {
-        title: 'Welcome',
-        icon: 'home',
+        // title: 'Welcome',
+        // icon: 'home',
+        title: 'Timer',
+        icon: 'schedule',
         path: '/',
         component: () => import('pages/IndexPage.vue')
     },
     {
         title: 'About',
-        icon: 'mdi-information-variant',
+        // icon: 'mdi-information-variant',
+        icon: 'info',
         path: 'about',
         component: () => import('pages/AboutPage.vue')
     },

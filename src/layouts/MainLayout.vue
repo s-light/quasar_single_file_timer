@@ -7,43 +7,33 @@
             icon="menu"
             aria-label="Menu"
             @click="toggleLeftDrawer"
-            class="fixed-top"
+            class="fixed-top q-ma-sm"
             style="z-index: 10000"
-        />
-        <!-- <q-header elevated>
-            <q-toolbar>
-                <q-btn
-                    flat
-                    dense
-                    round
-                    icon="menu"
-                    aria-label="Menu"
-                    @click="toggleLeftDrawer"
-                />
-
-                <q-toolbar-title>
-                    GoalDetectionMini
-                </q-toolbar-title>
-
-                <div>Quasar v{{ $q.version }}</div>
-            </q-toolbar>
-        </q-header> -->
-
+        >
+        </q-btn>
+        <!--
+        :mini="miniState"
+        @mouseover="miniState = false"
+        @mouseout="miniState = true"
+        mini-to-overlay
+        overlay
+        -->
         <q-drawer
             v-model="leftDrawerOpen"
             show-if-above
             bordered
+            elevated
+            persistent
         >
-            <q-list>
-                <q-item-label header class="q-mt-lg">
-                    {{ appinfo.productName }}
-                </q-item-label>
+            <q-list class="q-pt-xl">
                 <EssentialNavigation/>
                 <q-item-label
-                    class="absolute-bottom"
+                    header
+                    class="fixed-bottom"
                 >
+                    {{ appinfo.productName }} v{{ appinfo.version }}
+                    <br>
                     Quasar v{{ $q.version }}
-                    App v{{ appinfo.version }}
                 </q-item-label>
             </q-list>
         </q-drawer>
@@ -54,7 +44,6 @@
 </template>
 
 <script>
-
 import { defineComponent, ref } from 'vue'
 // import packageInfo from '../../package.json'
 // we do not import the package.json as this could be a security concern.
@@ -71,12 +60,16 @@ export default defineComponent({
     setup () {
         const leftDrawerOpen = ref(false)
 
+        console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
+
         return {
             // essentialLinks: linksList,
             leftDrawerOpen,
             toggleLeftDrawer () {
                 leftDrawerOpen.value = !leftDrawerOpen.value
-            }
+                console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
+            },
+            // miniState: ref(true),
         }
     },
     data () {
