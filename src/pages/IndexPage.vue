@@ -92,10 +92,11 @@ export default defineComponent({
             return result
         }
         const countdown_start_with_time_new = () => {
+            console.log(`time_new: ${time_new.value}`)
             let duration = convert_date_to_millis(
-                date.extractDate(time_new, 'HH:mm:ss')
+                date.extractDate(time_new.value, 'HH:mm:ss')
             )
-            // console.log(duration);
+            console.log(`duration: ${duration}`)
             countdown_start(duration)
         }
 
