@@ -1,6 +1,6 @@
 {
   "name": "quasar-single-file-timer",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "productName": "SimpleCountdownTimer ",
   "description": "very simple countdown / timer single-file inlined/packed quasar app",
   "author": "s-light <git@s-light.eu>",
