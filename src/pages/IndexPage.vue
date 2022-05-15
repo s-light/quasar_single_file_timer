@@ -1,11 +1,6 @@
 <template>
     <q-page class="flex flex-center content-stretch">
-        <timer-control
-            class="col-auto self-end qma-sm q-pt-xl"
-            :thetime="thetime"
-        />
         <timer-display
-            class="col"
             :thetime="thetime"
         />
     </q-page>
@@ -16,7 +11,7 @@
 import { useQuasar } from 'quasar'
 import { useTheTimeStore } from 'stores/thetime'
 
-import TimerControl from 'components/TimerControl'
+
 import TimerDisplay from 'components/TimerDisplay'
 
 const thetime = useTheTimeStore()

@@ -27,6 +27,16 @@
         >
             <q-list class="q-pt-xl">
                 <EssentialNavigation/>
+
+                <q-item>
+                    <q-item-section>
+                        <timer-control
+
+                            :thetime="thetime"
+                        />
+                    </q-item-section>
+                </q-item>
+
                 <q-item-label
                     header
                     class="fixed-bottom"
@@ -51,15 +61,18 @@ import appinfo from '../../appinfo.json'
 
 import EssentialNavigation from 'components/EssentialNavigation.vue'
 
+import { useTheTimeStore } from 'stores/thetime'
+import TimerControl from 'components/TimerControl'
+
 export default defineComponent({
     name: 'MainLayout',
-
     components: {
-        EssentialNavigation
+        EssentialNavigation,
+        TimerControl,
     },
     setup () {
+        const thetime = useTheTimeStore()
         const leftDrawerOpen = ref(false)
-
         console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
 
         return {
@@ -70,6 +83,7 @@ export default defineComponent({
                 console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
             },
             // miniState: ref(true),
+            thetime,
         }
     },
     data () {
