@@ -1,14 +1,6 @@
 <template>
     <q-page class="flex flex-center content-stretch">
         <section  class="col-auto self-end qma-sm q-pt-xl">
-            <q-input
-                v-model="time_new"
-                outlined
-                type="time"
-                step="1"
-                pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
-            />
-            <q-btn label="start" outlined @click="countdown_start_with_time_new()"/>
             <ul>
                 <li
                     v-for="item in duration_list"
@@ -21,6 +13,17 @@
                     />
                 </li>
             </ul>
+            <section>
+                <q-input
+                    v-model="time_new"
+                    outlined
+                    type="time"
+                    step="1"
+                    pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
+                />
+                <q-btn label="start" outlined @click="countdown_start_with_time_new()"/>
+                <q-btn label="add" outlined @click="duration_list.push(time_new)"/>
+            </section>
         </section>
         <section class="col flex flex-center">
             <q-circular-progress
