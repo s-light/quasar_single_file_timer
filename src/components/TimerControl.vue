@@ -20,12 +20,11 @@
             </ul>
         </section>
         <section>
-            <q-input
-                v-model="timeNew"
+            <TimeInput
+                v-model="thetime.duration"
                 outlined
-                type="time"
-                step="1"
-                pattern="[0-9]{2}:[0-9]{2}:[0-9]{2}"
+                @keyup.enter="timer_start()"
+                @keyup="timer_update()"
             />
             <q-btn label="start" outlined @click="timerStartWithTimeNew()"/>
             <q-btn label="add" outlined @click="duration_list.push(timeNew)"/>
@@ -41,9 +40,10 @@
 </template>
 
 <script setup>
-import { ref, toRef, unref, onUnmounted } from 'vue'
+import { ref, toRef, unref, computed, onUnmounted } from 'vue'
 import { useTimerTools } from './TimerFormat.js'
 import { useTheTimeStore } from 'stores/thetime'
+import TimeInput from 'components/TimeInput'
 
 const props = defineProps({
     // thetime: {
@@ -60,8 +60,6 @@ const props = defineProps({
     //     default: 500,
     // },
 })
-
-const timeNew = ref("00:00:10")
 
 // const thetime = toRef(props, 'thetime')
 const thetime = useTheTimeStore()
@@ -88,11 +86,15 @@ const timer_update = () => {
     // console.log(`remaining: ${thetime.remaining}   elapsed: ${thetime.elapsed}`)
     // console.log(`elapsed:   ${thetime.elapsed}`)
     // console.log(`remaining: ${thetime.remaining}`)
-    if (thetime.remaining <= thetime.interval) {
-        // console.log("timer_stop");
-        timer_stop()
-        // console.log("run alarm:");
-        thetime.alarm_running = true;
+    if (thetime.running) {
+        if (thetime.remaining <= thetime.interval) {
+            // console.log("timer_stop");
+            timer_stop()
+            // console.log("run alarm:");
+            thetime.alarm_running = true
+        }
+    } else {
+        thetime.start = thetime.now
     }
 }
 
@@ -113,12 +115,20 @@ const timer_start = (duration_ms=null) => {
     thetime.timer_id = window.setInterval(timer_update, thetime.interval)
 }
 
-const timerStartWithTimeNew = () => {
-    // console.log(`timeNew: ${timeNew.value}`)
-    let duration = timerTools.convertTimeStrToDuration(timeNew.value)
-    // console.log(`duration: ${duration}`)
-    timer_start(duration)
-}
+const remaining_formated = computed(() => {
+    // we have to substract a hour
+    // i do not remember why exactly - just that i stumbled accross this before..
+    // we also add 1 second - this way we count down to 0...
+    // const remaining_mod = thetime.remaining - (60*60*1000) + 1000
+    // const remaining_formated =  timerTools.durationFormatted(remaining_mod)
+    // console.log(`remaining ${thetime.remaining} → ${remaining_mod} → ${remaining_formated}`);
+    // return remaining_formated
+    let offset = (60*60*1000)
+    if (thetime.running) {
+        offset += 1000
+    }
+    return timerTools.durationFormatted(thetime.remaining - offset)
+})
 
 onUnmounted(() => {
     timer_stop()

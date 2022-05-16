@@ -142,7 +142,11 @@ const remaining_formated = computed(() => {
     // const remaining_formated =  timerTools.durationFormatted(remaining_mod)
     // console.log(`remaining ${thetime.remaining} → ${remaining_mod} → ${remaining_formated}`);
     // return remaining_formated
-    return timerTools.durationFormatted(thetime.remaining - (60*60*1000) + 1000)
+    let offset = (60*60*1000)
+    if (thetime.running) {
+        offset += 1000
+    }
+    return timerTools.durationFormatted(thetime.remaining - offset)
 })
 
 </script>

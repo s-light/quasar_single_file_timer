@@ -7,6 +7,7 @@ export const useTheTimeStore = defineStore('thetime', {
         timer_id: null,
         duration: 10 * 1000,
         interval: 50,
+        format: 'HH:mm:ss',
         // update helper...
         now: Date.now(),
         // alarm..
@@ -16,7 +17,13 @@ export const useTheTimeStore = defineStore('thetime', {
     getters: {
         // https://pinia.vuejs.org/core-concepts/getters.html
         end: (state) => state.start + state.duration,
-        remaining: (state) => state.end - state.now,
+        remaining: (state) => {
+            let remaining = state.duration
+            if (state.running) {
+                remaining = state.end - state.now
+            }
+            return remaining
+        },
         elapsed: (state) => state.now - state.start,
         // 100% = duration
         //   x  = elapsed
