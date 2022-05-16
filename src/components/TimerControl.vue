@@ -1,17 +1,24 @@
 <template>
     <section>
-        <ul>
-            <li
-                v-for="item in duration_list"
-                :key="item"
-            >
-                <q-btn
-                    :label="item"
-                    outlined
-                    @click="timer_start(timerTools.convertTimeStrToDuration(item))"
-                />
-            </li>
-        </ul>
+        <section>
+            <h5>
+                timer
+            </h5>
+        </section>
+        <section>
+            <ul>
+                <li
+                    v-for="item in duration_list"
+                    :key="item"
+                >
+                    <q-btn
+                        :label="item"
+                        outlined
+                        @click="timer_start(timerTools.convertTimeStrToDuration(item))"
+                    />
+                </li>
+            </ul>
+        </section>
         <section>
             <q-input
                 v-model="timeNew"
@@ -23,102 +30,109 @@
             <q-btn label="start" outlined @click="timerStartWithTimeNew()"/>
             <q-btn label="add" outlined @click="duration_list.push(timeNew)"/>
         </section>
+        <section>
+            <h5>
+                timetravel
+            </h5>
+            <q-btn label="-1min" outlined @click="thetime.timetravel(-1)"/>
+            <q-btn label="+1min" outlined @click="thetime.timetravel(+1)"/>
+        </section>
     </section>
 </template>
 
 <script setup>
-import { ref, toRef, unref } from 'vue'
+import { ref, toRef, unref, onUnmounted } from 'vue'
 import { useTimerTools } from './TimerFormat.js'
+import { useTheTimeStore } from 'stores/thetime'
 
 const props = defineProps({
-    thetime: {
-        type: Object,
-        required: true
-    },
+    // thetime: {
+    //     type: Object,
+    //     required: true,
+    // },
     // timeNew: ref("00:00:10"),
+    // format: {
+    //     type: String,
+    //     default: 'HH:mm:ss',
+    // },
+    // interval: {
+    //     type: Number,
+    //     default: 500,
+    // },
 })
 
 const timeNew = ref("00:00:10")
 
-const thetime = toRef(props, 'thetime')
-const timer = unref(thetime).timer
-const alarm = unref(thetime).alarm
-// const timer = props.thetime.timer
-// console.log("thetime.value:", thetime.value)
-// console.log("unref(thetime):", unref(thetime))
-// const timer = thetime.timer
-// console.log("timer:", timer)
+// const thetime = toRef(props, 'thetime')
+const thetime = useTheTimeStore()
 
-const timerTools = useTimerTools(timer.format)
+const timerTools = useTimerTools(thetime.format)
 
 // timer actions
 const timer_stop = () => {
     // console.log("stop!");
-    if (timer.timer_id) {
-        window.clearInterval(timer.timer_id)
+    if (thetime.timer_id) {
+        window.clearInterval(thetime.timer_id)
     }
-    timer.timer_id = null
-
-    timer.now = timer.end + 1000
-    timer.running = false
+    thetime.timer_id = null
+    // console.log(`timer_stop thetime.end: ${thetime.end}`);
+    // console.log(`timer_stop thetime.now: ${thetime.now}`);
+    thetime.now = thetime.end + 1000
+    // console.log(`timer_stop thetime.now: ${thetime.now}`);
+    // console.log(`timer_stop thetime.remaining: ${thetime.remaining}`);
+    thetime.running = false
 }
 
 const timer_update = () => {
-    timer.now = Date.now();
-    // console.log(`elapsed:   ${timer.elapsed}`)
-    // console.log(`remaining: ${timer.remaining}`)
-    if (thetime.value.remaining <= timer.interval) {
-        console.log("timer_stop");
+    thetime.now = Date.now();
+    // console.log(`remaining: ${thetime.remaining}   elapsed: ${thetime.elapsed}`)
+    // console.log(`elapsed:   ${thetime.elapsed}`)
+    // console.log(`remaining: ${thetime.remaining}`)
+    if (thetime.remaining <= thetime.interval) {
+        // console.log("timer_stop");
         timer_stop()
-        console.log("run alarm:");
-        alarm.running = true;
+        // console.log("run alarm:");
+        thetime.alarm_running = true;
     }
 }
 
 const timer_start = (duration_ms=null) => {
     // console.log("timer_start")
     timer_stop()
-    alarm.running = false
+    thetime.alarm_running = false
     if (duration_ms) {
-        timer.duration = duration_ms
+        thetime.duration = duration_ms
     }
     // console.log(`duration_ms: ${duration_ms}`)
-    // console.log(`timer.duration: ${timer.duration}`)
-    timer.start = Date.now()
-    timer.end = Date.now() + timer.duration
-    timer.timer_id = window.setInterval(timer_update, timer.update_interval)
-    timer.running = true;
+    // console.log(`thetime.duration: ${thetime.duration}`)
+    thetime.start = Date.now()
+    // console.log(`thetime.start:       ${thetime.start}`)
+    // console.log(`thetime.end: ${thetime.end}`)
+    timer_update()
+    thetime.running = true;
+    thetime.timer_id = window.setInterval(timer_update, thetime.interval)
 }
 
 const timerStartWithTimeNew = () => {
-    console.log(`timeNew: ${timeNew.value}`)
+    // console.log(`timeNew: ${timeNew.value}`)
     let duration = timerTools.convertTimeStrToDuration(timeNew.value)
-    console.log(`duration: ${duration}`)
+    // console.log(`duration: ${duration}`)
     timer_start(duration)
 }
 
-
-
-
-
+onUnmounted(() => {
+    timer_stop()
+})
 
 
 // ------------------------------------------
 // list
 let duration_list = ref([
-    "00:00:02",
-    "00:00:05",
     "00:01:00",
     "00:05:00",
     "00:10:00",
     "00:15:00",
     "00:30:00",
 ])
-
-
-
-
-
-
 
 </script>

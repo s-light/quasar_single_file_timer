@@ -30,42 +30,52 @@ import { toRef, unref, ref, computed, onUnmounted , watch} from 'vue'
 import { useQuasar, date } from 'quasar'
 import bell_sound from 'assets/01__04__s-light__singing_bowl_-_single_strike_4.ogg'
 import { useTimerTools } from './TimerFormat.js'
+import { useTheTimeStore } from 'stores/thetime'
 
+const $q = useQuasar()
 
 const props = defineProps({
-    thetime: {
-        type: Object,
-        required: true
+    // thetime: {
+    //     type: Object,
+    //     required: true
+    // },
+    duration: {
+        type: Number,
+        default: 5 * 1000
+    },
+    interval: {
+        type: Number,
+        default: 500
     },
 })
 
-const thetime = toRef(props, 'thetime')
-const timer = unref(thetime).timer
-const alarm = unref(thetime).alarm
+const color_orig = ref($q.dark.isActive)
+const remaining = ref(0)
+const interval_id = ref(null)
 
+// const thetime = toRef(props, 'thetime')
+const thetime = useTheTimeStore()
 
-const timerTools = useTimerTools(timer.format)
+const timerTools = useTimerTools(thetime.format)
 // console.log("useTimerTools:", useTimerTools)
 // console.log("timerTools:", timerTools)
-
-const $q = useQuasar()
 
 const audio_bell = new Audio(bell_sound)
 // console.log(`audio_bell ${audio_bell}`);
 
 
 // alarm
-const alarm_toggle_colors = () => {
+const alarmToggleColors = () => {
     $q.dark.toggle()
 }
 
-const alarm_update = () => {
-    // console.log("alarm_update")
-    alarm_toggle_colors()
-    alarm.remaining -= alarm.interval
-    if (alarm.remaining <= 0) {
+const alarmUpdate = () => {
+    // console.log("alarmUpdate")
+    alarmToggleColors()
+    remaining.value -= props.interval
+    if (remaining.value <= 0) {
         alarm_stop()
-        alarm.running = false
+        thetime.alarm_running = false
     }
 }
 
@@ -73,17 +83,17 @@ const alarm_start = () => {
     // console.log("alarm_start")
     alarm_stop()
     audio_bell.play()
-    alarm.color_orig = $q.dark.isActive
-    alarm.remaining = alarm.duration
-    alarm.timer_id = window.setInterval(alarm_update, alarm.interval)
+    color_orig.value = $q.dark.isActive
+    remaining.value = props.duration
+    interval_id.value = window.setInterval(alarmUpdate, props.interval)
 }
 
 const alarm_stop = () => {
     // console.log("alarm_stop")
-    if (alarm.timer_id) {
-        window.clearInterval(alarm.timer_id)
-        alarm.timer_id = null
-        $q.dark.set(alarm.color_orig)
+    if (interval_id.value) {
+        window.clearInterval(interval_id.value)
+        interval_id.value = null
+        $q.dark.set(color_orig.value)
     }
 }
 
@@ -95,7 +105,7 @@ const alarm_stop = () => {
 //     },
 // )
 watch(
-    () => alarm.running,
+    () => thetime.alarm_running,
     (newValue, oldValue) => {
         console.log("watch: alarm.running", oldValue, "→", newValue);
         if(oldValue == false && newValue == true) {
@@ -106,19 +116,33 @@ watch(
     },
 )
 
-
-
-const remaining_formated = computed(() => {
-    // we have to substract a hour
-    // i do not remember why exactly - just that i stumbled accross this before..
-    // we also add 1 second - this way we count down to 0...
-    return timerTools.durationFormatted(thetime.value.remaining - (60*60*1000) + 1000)
+onUnmounted(() => {
+    alarm_stop()
 })
+
+
 
 // handle = requestAnimationFrame(update)
 // update()
 // onUnmounted(() => {
 // cancelAnimationFrame(handle)
 // })
+
+
+
+
+
+
+
+const remaining_formated = computed(() => {
+    // we have to substract a hour
+    // i do not remember why exactly - just that i stumbled accross this before..
+    // we also add 1 second - this way we count down to 0...
+    // const remaining_mod = thetime.remaining - (60*60*1000) + 1000
+    // const remaining_formated =  timerTools.durationFormatted(remaining_mod)
+    // console.log(`remaining ${thetime.remaining} → ${remaining_mod} → ${remaining_formated}`);
+    // return remaining_formated
+    return timerTools.durationFormatted(thetime.remaining - (60*60*1000) + 1000)
+})
 
 </script>

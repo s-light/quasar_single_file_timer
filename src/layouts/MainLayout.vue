@@ -31,9 +31,10 @@
                 <q-item>
                     <q-item-section>
                         <timer-control
-
-                            :thetime="thetime"
                         />
+                        <!--
+                        :thetime="thetime"
+                        -->
                     </q-item-section>
                 </q-item>
 
@@ -61,7 +62,7 @@ import appinfo from '../../appinfo.json'
 
 import EssentialNavigation from 'components/EssentialNavigation.vue'
 
-import { useTheTimeStore } from 'stores/thetime'
+// import { useTheTimeStore } from 'stores/thetime'
 import TimerControl from 'components/TimerControl'
 
 export default defineComponent({
@@ -71,7 +72,7 @@ export default defineComponent({
         TimerControl,
     },
     setup () {
-        const thetime = useTheTimeStore()
+        // const thetime = useTheTimeStore()
         const leftDrawerOpen = ref(false)
         console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
 
@@ -83,13 +84,13 @@ export default defineComponent({
                 console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
             },
             // miniState: ref(true),
-            thetime,
+            // thetime,
+            appinfo,
         }
     },
-    data () {
-        return {
-            appinfo: appinfo
-        }
-    },
+    // data () {
+    //     return {
+    //     }
+    // },
 })
 </script>
