@@ -35,6 +35,15 @@
                         <!--
                         :thetime="thetime"
                         -->
+                        <window-portal
+                            :open="windowPortalOpen"
+                        >
+                            <timer-control/>
+                        </window-portal>
+                        <q-toggle
+                            v-model="windowPortalOpen"
+                            label="control window"
+                        />
                     </q-item-section>
                 </q-item>
 
@@ -62,6 +71,8 @@ import appinfo from '../../appinfo.json'
 
 import EssentialNavigation from 'components/EssentialNavigation.vue'
 
+import WindowPortal from 'components/WindowPortal'
+
 // import { useTheTimeStore } from 'stores/thetime'
 import TimerControl from 'components/TimerControl'
 
@@ -70,11 +81,14 @@ export default defineComponent({
     components: {
         EssentialNavigation,
         TimerControl,
+        WindowPortal,
     },
     setup () {
         // const thetime = useTheTimeStore()
         const leftDrawerOpen = ref(false)
         console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
+
+        const windowPortalOpen = ref(false)
 
         return {
             // essentialLinks: linksList,
@@ -86,6 +100,7 @@ export default defineComponent({
             // miniState: ref(true),
             // thetime,
             appinfo,
+            windowPortalOpen,
         }
     },
     // data () {
