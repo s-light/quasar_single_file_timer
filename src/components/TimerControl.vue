@@ -26,7 +26,7 @@
                 @keyup.enter="timer_start()"
                 @keyup="timer_update()"
             />
-            <q-btn label="start" outlined @click="timerStartWithTimeNew()"/>
+            <q-btn label="start" outlined @click="timer_start()"/>
             <q-btn label="add" outlined @click="duration_list.push(timeNew)"/>
         </section>
         <section>
