@@ -49,7 +49,7 @@ export default {
                     // options
                     "popup,width=300,height=700,left=200,top=200"
                 );
-                this.windowRef.addEventListener('beforeunload', this.closePortal);
+                this.windowRef.addEventListener('beforeunload', this.portalBeforeunload);
                 // magic!
                 console.log("attach 'slotchild' to new window");
                 this.windowRef.document.body.appendChild(this.$refs.slotchild);
@@ -59,11 +59,20 @@ export default {
             }
             console.groupEnd()
         },
+        portalBeforeunload() {
+            console.group("portalBeforeunload");
+            if (this.$refs.slotchild.parentElement != this.$refs.root) {
+                console.log("reattach 'slotchild' to main window");
+                this.$refs.root.appendChild(this.$refs.slotchild);
+                this.$emit('close');
+            } else {
+                console.log("closeing triggerd from main window...");
+            }
+            console.groupEnd();
+        },
         closePortal() {
             console.group("closePortal");
             if(this.windowRef != null && this.windowRef.closed == false) {
-                console.log("reattach 'slotchild' to main window");
-                this.$refs.root.appendChild(this.$refs.slotchild);
                 console.log("closing..");
                 this.windowRef.close();
                 this.windowRef = null;
