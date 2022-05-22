@@ -30,15 +30,8 @@ const step = ref(1)
 const thetime = useTheTimeStore()
 const timerTools = useTimerTools(thetime.format)
 
-// const durationAsTime = ref("12:55:11")
 const durationAsTime = computed(() => {
-    // we have to substract a hour
-    // i do not remember why exactly - just that i stumbled accross this before..
-    // console.log("props.modelValue", props.modelValue)
-    // const result =  timerTools.durationFormatted(props.modelValue - (60*60*1000))
-    // console.log("result", result)
-    // return result
-    return timerTools.durationFormatted(props.modelValue - (60*60*1000))
+    return timerTools.convertDurationToTimeStr(props.modelValue)
 })
 
 const emitTimeAsDuration= (timeString) => {

@@ -4,6 +4,9 @@
             <h5>
                 timer
             </h5>
+            <h6>
+                {{thetime.remaining_formatted}}
+            </h6>
         </section>
         <section>
             <ul>
@@ -27,7 +30,7 @@
                 @keyup="thetime.timer_update()"
             />
             <q-btn label="start" outlined @click="thetime.timer_start()"/>
-            <q-btn label="add" outlined @click="thetime.duration_list.push(timeNew)"/>
+            <q-btn label="add" outlined @click="listAddEntry()"/>
         </section>
         <section>
             <h5>
@@ -69,23 +72,23 @@ const timerTools = useTimerTools(thetime.format)
 
 
 const remaining_formated = computed(() => {
-    // we have to substract a hour
-    // i do not remember why exactly - just that i stumbled accross this before..
-    // we also add 1 second - this way we count down to 0...
-    // const remaining_mod = thetime.remaining - (60*60*1000) + 1000
-    // const remaining_formated =  timerTools.durationFormatted(remaining_mod)
-    // console.log(`remaining ${thetime.remaining} → ${remaining_mod} → ${remaining_formated}`);
-    // return remaining_formated
-    let offset = (60*60*1000)
+    // visual hack:
+    // if timer is running we add 1 second - this way we count down to 0...
+    let offset = 0
     if (thetime.running) {
         offset += 1000
     }
-    return timerTools.durationFormatted(thetime.remaining - offset)
+    return timerTools.convertDurationToTimeStr(thetime.remaining - offset)
 })
 
 // onUnmounted(() => {
 //     timer_stop()
 // })
 
+const listAddEntry = () => {
+    thetime.duration_list.push(
+        timerTools.convertDurationToTimeStr(thetime.duration)
+    )
+}
 
 </script>

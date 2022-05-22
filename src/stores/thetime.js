@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useTimerTools } from '../components/TimerFormat.js'
 
 export const useTheTimeStore = defineStore('thetime', {
     state: () => ({
@@ -31,6 +32,16 @@ export const useTheTimeStore = defineStore('thetime', {
                 remaining = state.end - state.now
             }
             return remaining
+        },
+        remaining_formatted: (state) => {
+            // visual hack:
+            // if timer is running we add 1 second - this way we count down to 0...
+            const timerTools = useTimerTools(state.format)
+            let offset = 0
+            if (state.running) {
+                offset -= 1000
+            }
+            return timerTools.convertDurationToTimeStr(state.remaining - offset)
         },
         elapsed: (state) => state.now - state.start,
         // 100% = duration

@@ -6,6 +6,7 @@ export function useTimerTools(format='HH:mm:ss') {
   // otherwise, maybeRef is returned as-is
   // const value = unref(maybeRef)
 
+  const offset = (60*60*1000)
 
   function convertDateToMillis(duration_date) {
       let result = 0;
@@ -31,13 +32,20 @@ export function useTimerTools(format='HH:mm:ss') {
       return duration
   }
 
+  function convertDurationToTimeStr(duration) {
+      // we have to subtract a hour
+      // i do not remember why exactly - just that i stumbled across this before..
+      return date.formatDate(unref(duration) - offset, unref(format))
+  }
+
   function durationFormatted(duration) {
-      return date.formatDate(unref(duration), unref(format))
+      return convertDurationToTimeStr(duration)
   }
 
   return {
       convertDateToMillis,
       convertTimeStrToDuration,
+      convertDurationToTimeStr,
       durationFormatted,
   }
 }

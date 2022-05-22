@@ -19,8 +19,11 @@
                 :thickness="0.1"
                 center-color="grey-8"
             -->
-            <!-- {{thetime.remaining}} -->
-            {{remaining_formated}}
+            <!--
+                {{thetime.remaining}}
+                {{remaining_formatted}}
+            -->
+            {{thetime.remaining_formatted}}
         </q-circular-progress>
     </section>
 </template>
@@ -121,6 +124,15 @@ onUnmounted(() => {
 })
 
 
+// const remaining_formatted =  computed(() => {
+//     // visual hack:
+//     // if timer is running we add 1 second - this way we count down to 0...
+//     let offset = 0
+//     if (thetime.running) {
+//         offset += 1000
+//     }
+//     return timerTools.convertDurationToTimeStr(thetime.remaining - offset)
+// })
 
 // handle = requestAnimationFrame(update)
 // update()
@@ -128,25 +140,5 @@ onUnmounted(() => {
 // cancelAnimationFrame(handle)
 // })
 
-
-
-
-
-
-
-const remaining_formated = computed(() => {
-    // we have to substract a hour
-    // i do not remember why exactly - just that i stumbled accross this before..
-    // we also add 1 second - this way we count down to 0...
-    // const remaining_mod = thetime.remaining - (60*60*1000) + 1000
-    // const remaining_formated =  timerTools.durationFormatted(remaining_mod)
-    // console.log(`remaining ${thetime.remaining} → ${remaining_mod} → ${remaining_formated}`);
-    // return remaining_formated
-    let offset = (60*60*1000)
-    if (thetime.running) {
-        offset += 1000
-    }
-    return timerTools.durationFormatted(thetime.remaining - offset)
-})
 
 </script>

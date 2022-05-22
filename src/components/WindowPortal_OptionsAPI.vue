@@ -1,6 +1,6 @@
 <template>
-    <div v-if="open" ref="root">
-        <div v-if="open" class="window-portal"  ref="child">
+    <div ref="root" class="window-portal-container">
+        <div v-show="open" class="window-portal"  ref="slotchild">
             <slot />
         </div>
     </div>
@@ -40,6 +40,7 @@ export default {
             console.group("openPortal");
             if(this.windowRef == null || this.windowRef.closed) {
                 console.log("create new window");
+                console.log("this.$refs", this.$refs);
                 this.windowRef = window.open(
                     // url
                     "",
@@ -50,8 +51,8 @@ export default {
                 );
                 this.windowRef.addEventListener('beforeunload', this.closePortal);
                 // magic!
-                console.log("attach 'child' to new window");
-                this.windowRef.document.body.appendChild(this.$refs.child);
+                console.log("attach 'slotchild' to new window");
+                this.windowRef.document.body.appendChild(this.$refs.slotchild);
                 this.copyStyles()
             } else {
                 this.windowRef.focus();
@@ -60,9 +61,9 @@ export default {
         },
         closePortal() {
             console.group("closePortal");
-            if(this.windowRef != null || this.windowRef.closed == false) {
-                console.log("reattach 'child' to main window");
-                this.$refs.root.appendChild(this.$refs.child);
+            if(this.windowRef != null && this.windowRef.closed == false) {
+                console.log("reattach 'slotchild' to main window");
+                this.$refs.root.appendChild(this.$refs.slotchild);
                 console.log("closing..");
                 this.windowRef.close();
                 this.windowRef = null;
@@ -134,6 +135,10 @@ export default {
 </script>
 
 <style media="screen">
+.window-portal-container {
+    display: none;
+}
+
 .window-portal {
     width: 100%;
     height: 100%;
