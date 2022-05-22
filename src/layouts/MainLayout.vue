@@ -37,6 +37,9 @@
                         -->
                         <window-portal
                             :open="windowPortalOpen"
+                            @close="windowPortalOpen=false"
+                            style="font-size:1.5em;"
+                            class="q-dark q-pt-xl"
                         >
                             <timer-control/>
                         </window-portal>
@@ -71,7 +74,8 @@ import appinfo from '../../appinfo.json'
 
 import EssentialNavigation from 'components/EssentialNavigation.vue'
 
-import WindowPortal from 'components/WindowPortal'
+// import WindowPortal from 'components/WindowPortal'
+import WindowPortal from 'components/WindowPortal_OptionsAPI'
 
 // import { useTheTimeStore } from 'stores/thetime'
 import TimerControl from 'components/TimerControl'

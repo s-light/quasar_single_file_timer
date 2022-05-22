@@ -8,13 +8,13 @@
         <section>
             <ul>
                 <li
-                    v-for="item in duration_list"
+                    v-for="item in thetime.duration_list"
                     :key="item"
                 >
                     <q-btn
                         :label="item"
                         outlined
-                        @click="timer_start(timerTools.convertTimeStrToDuration(item))"
+                        @click="thetime.timer_start(timerTools.convertTimeStrToDuration(item))"
                     />
                 </li>
             </ul>
@@ -23,11 +23,11 @@
             <TimeInput
                 v-model="thetime.duration"
                 outlined
-                @keyup.enter="timer_start()"
-                @keyup="timer_update()"
+                @keyup.enter="thetime.timer_start()"
+                @keyup="thetime.timer_update()"
             />
-            <q-btn label="start" outlined @click="timer_start()"/>
-            <q-btn label="add" outlined @click="duration_list.push(timeNew)"/>
+            <q-btn label="start" outlined @click="thetime.timer_start()"/>
+            <q-btn label="add" outlined @click="thetime.duration_list.push(timeNew)"/>
         </section>
         <section>
             <h5>
@@ -38,6 +38,7 @@
         </section>
     </section>
 </template>
+
 
 <script setup>
 import { ref, toRef, unref, computed, onUnmounted } from 'vue'
@@ -66,54 +67,6 @@ const thetime = useTheTimeStore()
 
 const timerTools = useTimerTools(thetime.format)
 
-// timer actions
-const timer_stop = () => {
-    // console.log("stop!");
-    if (thetime.timer_id) {
-        window.clearInterval(thetime.timer_id)
-    }
-    thetime.timer_id = null
-    // console.log(`timer_stop thetime.end: ${thetime.end}`);
-    // console.log(`timer_stop thetime.now: ${thetime.now}`);
-    thetime.now = thetime.end + 1000
-    // console.log(`timer_stop thetime.now: ${thetime.now}`);
-    // console.log(`timer_stop thetime.remaining: ${thetime.remaining}`);
-    thetime.running = false
-}
-
-const timer_update = () => {
-    thetime.now = Date.now();
-    // console.log(`remaining: ${thetime.remaining}   elapsed: ${thetime.elapsed}`)
-    // console.log(`elapsed:   ${thetime.elapsed}`)
-    // console.log(`remaining: ${thetime.remaining}`)
-    if (thetime.running) {
-        if (thetime.remaining <= thetime.interval) {
-            // console.log("timer_stop");
-            timer_stop()
-            // console.log("run alarm:");
-            thetime.alarm_running = true
-        }
-    } else {
-        thetime.start = thetime.now
-    }
-}
-
-const timer_start = (duration_ms=null) => {
-    // console.log("timer_start")
-    timer_stop()
-    thetime.alarm_running = false
-    if (duration_ms) {
-        thetime.duration = duration_ms
-    }
-    // console.log(`duration_ms: ${duration_ms}`)
-    // console.log(`thetime.duration: ${thetime.duration}`)
-    thetime.start = Date.now()
-    // console.log(`thetime.start:       ${thetime.start}`)
-    // console.log(`thetime.end: ${thetime.end}`)
-    timer_update()
-    thetime.running = true;
-    thetime.timer_id = window.setInterval(timer_update, thetime.interval)
-}
 
 const remaining_formated = computed(() => {
     // we have to substract a hour
@@ -130,19 +83,9 @@ const remaining_formated = computed(() => {
     return timerTools.durationFormatted(thetime.remaining - offset)
 })
 
-onUnmounted(() => {
-    timer_stop()
-})
+// onUnmounted(() => {
+//     timer_stop()
+// })
 
-
-// ------------------------------------------
-// list
-let duration_list = ref([
-    "00:01:00",
-    "00:05:00",
-    "00:10:00",
-    "00:15:00",
-    "00:30:00",
-])
 
 </script>
