@@ -25,7 +25,7 @@
             elevated
             persistent
         >
-            <q-list class="q-pt-xl">
+            <q-list class="q-pt-xl q-pb-xl">
                 <EssentialNavigation/>
 
                 <q-item>
