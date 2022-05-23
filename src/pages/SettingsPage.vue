@@ -13,15 +13,12 @@
 </style>
 
 <script>
-// import packageInfo from '../../package.json'
-// we do not import the package.json as this could be a security concern.
-import appinfo from '../../appinfo.json'
 
 export default {
     name: 'SettingsPage',
     data () {
         return {
-            appinfo: appinfo
+            appinfo: process.env.appinfo,
         }
     }
 }

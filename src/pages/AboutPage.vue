@@ -4,6 +4,12 @@
         style="align-items: center;"
     >
         <section>
+            tests:
+            <!-- {{process.env.mytest}}
+            {{process.env.VUE_APP_VERSION}}
+            {{process.env}} -->
+        </section>
+        <section>
             <h4>{{ appinfo.productName }}</h4>
             <p>
                 version: v{{ appinfo.version }}
@@ -38,15 +44,14 @@
 </style>
 
 <script>
-// import packageInfo from '../../package.json'
-// we do not import the package.json as this could be a security concern.
-import appinfo from '../../appinfo.json'
 
 export default {
     name: 'AboutPage',
     data () {
+        // https://quasar.dev/quasar-cli-webpack/handling-process-env#caveats
+        // console.log(process.env.TEST)
         return {
-            appinfo: appinfo
+            appinfo: process.env.appinfo,
         }
     }
 }
