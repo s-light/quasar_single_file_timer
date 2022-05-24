@@ -3,12 +3,12 @@
         class="flex column"
         style="align-items: center;"
     >
-        <section>
-            tests:
-            <!-- {{process.env.mytest}}
-            {{process.env.VUE_APP_VERSION}}
-            {{process.env}} -->
-        </section>
+        <!--
+            <section>
+                tests:
+                {{process.env.mytest}}
+            </section>
+        -->
         <section>
             <h4>{{ appinfo.productName }}</h4>
             <p>
