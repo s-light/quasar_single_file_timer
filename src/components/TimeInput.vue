@@ -42,11 +42,11 @@ watch(
         // check for seconds
         if (newValue.includes(":ss")) {
             // show seconds
-            pattern = "[0-9]{2}:[0-9]{2}:[0-9]{2}";
-            step = 1;
+            pattern.value = "[0-9]{2}:[0-9]{2}:[0-9]{2}";
+            step.value = 1;
         } else {
-            pattern = "[0-9]{2}:[0-9]{2}";
-            step = 60;
+            pattern.value = "[0-9]{2}:[0-9]{2}";
+            step.value = 60;
         }
     }
 );

@@ -8,8 +8,9 @@ export const useTheTimeStore = defineStore("thetime", {
         timer_id: null,
         duration: 10 * 1000,
         interval: 50,
-        // format: 'HH:mm:ss',
-        format: "mm:ss",
+        format: 'HH:mm:ss',
+        formatDisplay: 'mm:ss',
+        // format: "mm:ss",
         // update helper...
         now: Date.now(),
         // alarm..
@@ -30,7 +31,7 @@ export const useTheTimeStore = defineStore("thetime", {
         remaining_formatted: (state) => {
             // visual hack:
             // if timer is running we add 1 second - this way we count down to 0...
-            const timerTools = useTimerTools(state.format);
+            const timerTools = useTimerTools(state.formatDisplay);
             let offset = 0;
             if (state.running) {
                 offset -= 1000;

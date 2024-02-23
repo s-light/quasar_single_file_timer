@@ -1,116 +1,99 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
+    <q-layout view="lHh Lpr lFf">
         <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
+            flat
+            dense
+            round
+            icon="menu"
+            aria-label="Menu"
+            @click="toggleLeftDrawer"
+            class="fixed-top q-ma-sm"
+            style="z-index: 10000"
         >
-          Essential Links
-        </q-item-label>
+        </q-btn>
+        <!--
+        :mini="miniState"
+        @mouseover="miniState = false"
+        @mouseout="miniState = true"
+        mini-to-overlay
+        overlay
+        -->
+        <q-drawer v-model="leftDrawerOpen" show-if-above bordered elevated persistent>
+            <q-list class="q-pt-xl q-pb-xl">
+                <EssentialNavigation />
 
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
+                <q-item>
+                    <q-item-section>
+                        <timer-control />
+                        <!--
+                        :thetime="thetime"
+                        -->
+                        <window-portal
+                            :open="windowPortalOpen"
+                            @close="windowPortalOpen = false"
+                            style="font-size: 1.5em"
+                            class="q-dark q-pt-xl"
+                        >
+                            <timer-control />
+                        </window-portal>
+                        <q-toggle v-model="windowPortalOpen" label="control window" />
+                    </q-item-section>
+                </q-item>
 
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+                <q-item-label header class="fixed-bottom">
+                    {{ appinfo.productName }} v{{ appinfo.version }}
+                    <br />
+                    Quasar v{{ $q.version }}
+                </q-item-label>
+            </q-list>
+        </q-drawer>
+        <q-page-container>
+            <router-view />
+        </q-page-container>
+    </q-layout>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { defineComponent, ref } from "vue";
 
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
+import EssentialNavigation from "components/EssentialNavigation.vue";
+
+// import WindowPortal from 'components/WindowPortal.vue'
+import WindowPortal from "components/WindowPortal_OptionsAPI.vue";
+
+// import { useTheTimeStore } from 'stores/thetime.js'
+import TimerControl from "components/TimerControl.vue";
 
 export default defineComponent({
-  name: 'MainLayout',
+    name: "MainLayout",
+    components: {
+        EssentialNavigation,
+        TimerControl,
+        WindowPortal,
+    },
+    setup() {
+        // const thetime = useTheTimeStore()
+        const leftDrawerOpen = ref(false);
+        console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
 
-  components: {
-    EssentialLink
-  },
+        const windowPortalOpen = ref(false);
 
-  setup () {
-    const leftDrawerOpen = ref(false)
-
-    return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      }
-    }
-  }
-})
+        return {
+            // essentialLinks: linksList,
+            leftDrawerOpen,
+            toggleLeftDrawer() {
+                leftDrawerOpen.value = !leftDrawerOpen.value;
+                console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
+            },
+            // miniState: ref(true),
+            // thetime,
+            appinfo: process.env.appinfo,
+            windowPortalOpen,
+        };
+    },
+    // data () {
+    //     return {
+    //     }
+    // },
+});
 </script>
