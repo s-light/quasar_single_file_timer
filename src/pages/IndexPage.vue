@@ -1,17 +1,33 @@
 <template>
-  <q-page class="flex flex-center">
-    <img
-      alt="Quasar logo"
-      src="~assets/quasar-logo-vertical.svg"
-      style="width: 200px; height: 200px"
-    >
-  </q-page>
+    <q-page class="flex flex-center content-stretch">
+        <timer-display :thetime="thetime" />
+    </q-page>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
+<script setup>
+// import { ref, computed } from 'vue'
+import { useQuasar } from "quasar";
+import { useTheTimeStore } from "stores/thetime.js";
 
-export default defineComponent({
-  name: 'IndexPage'
-})
+import TimerDisplay from "components/TimerDisplay.vue";
+
+const thetime = useTheTimeStore();
+
+// ------------------------------------------
+// experiments
+const $q = useQuasar();
+
+// https://quasar.dev/quasar-plugins/addressbar-color
+// $q.addressbarColor.set('#a2e3fa')
+
+// dark mode
+// get status
+// console.log($q.dark.isActive) // true, false
+// get configured status
+// console.log($q.dark.mode) // "auto", true, false
+// set status
+$q.dark.set(true); // or false or "auto"
+// toggle
+// $q.dark.toggle()
+// $q.notify('Message')
 </script>
