@@ -9,6 +9,8 @@ const packageInfo = require("./package.json");
 
 const { configure } = require("quasar/wrappers");
 
+const { viteSingleFile } = require("vite-plugin-singlefile")
+
 module.exports = configure(function (ctx) {
     return {
         eslint: {
@@ -82,9 +84,10 @@ module.exports = configure(function (ctx) {
             // extendViteConf (viteConf) {},
             // viteVuePluginOptions: {},
 
-            // vitePlugins: [
-            //   [ 'package-name', { ..options.. } ]
-            // ]
+            vitePlugins: [
+                //   [ 'package-name', { ..options.. } ]
+                [viteSingleFile()],
+            ],
         },
 
         // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
