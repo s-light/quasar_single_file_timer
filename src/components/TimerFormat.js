@@ -33,7 +33,14 @@ export function useTimerTools(format = "HH:mm:ss") {
     function convertDurationToTimeStr(duration) {
         // we have to subtract a hour
         // i do not remember why exactly - just that i stumbled across this before..
-        return date.formatDate(unref(duration) - offset, unref(format));
+        let time_string = "";
+        if (duration < 0) {
+            time_string = date.formatDate(unref(duration * -1) - offset, unref(format));
+            time_string = "-" + time_string;
+        } else {
+            time_string = date.formatDate(unref(duration) - offset, unref(format));
+        }
+        return time_string;
     }
 
     function durationFormatted(duration) {

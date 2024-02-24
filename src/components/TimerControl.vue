@@ -26,6 +26,7 @@
             />
             <q-btn label="start" outlined @click="thetime.timer_start()" />
             <q-btn label="add" outlined @click="listAddEntry()" />
+            <q-btn label="stop" outlined @click="thetime.timer_stop()" />
         </section>
         <section>
             <h5>timetravel</h5>

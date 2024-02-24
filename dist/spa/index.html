@@ -12242,7 +12242,14 @@ function useTimerTools(format = "HH:mm:ss") {
     return duration2;
   }
   function convertDurationToTimeStr(duration2) {
-    return date.formatDate(unref(duration2) - offset, unref(format));
+    let time_string = "";
+    if (duration2 < 0) {
+      time_string = date.formatDate(unref(duration2 * -1) - offset, unref(format));
+      time_string = "-" + time_string;
+    } else {
+      time_string = date.formatDate(unref(duration2) - offset, unref(format));
+    }
+    return time_string;
   }
   function durationFormatted(duration2) {
     return convertDurationToTimeStr(duration2);
@@ -12264,6 +12271,7 @@ const useTheTimeStore = defineStore("thetime", {
     format: "HH:mm:ss",
     formatDisplay: "mm:ss",
     now: Date.now(),
+    alarm_visual: true,
     alarm_running: false,
     duration_list: ["00:01:00", "00:02:00", "00:05:00", "00:10:00", "00:15:00", "00:30:00"]
   }),
@@ -12276,16 +12284,20 @@ const useTheTimeStore = defineStore("thetime", {
       }
       return remaining;
     },
-    remaining_formatted: (state) => {
-      const timerTools = useTimerTools(state.formatDisplay);
+    remaining_formatted_number: (state) => {
       let offset = 0;
-      if (state.running) {
+      if (state.running && state.remaining >= 0) {
         offset -= 1e3;
       }
-      return timerTools.convertDurationToTimeStr(state.remaining - offset);
+      return state.remaining - offset;
+    },
+    remaining_formatted: (state) => {
+      const timerTools = useTimerTools(state.formatDisplay);
+      return timerTools.convertDurationToTimeStr(state.remaining_formatted_number);
     },
     elapsed: (state) => state.now - state.start,
-    elapsed_percentage: (state) => 100 * state.elapsed / state.duration
+    elapsed_percentage: (state) => 100 * (state.elapsed % state.duration) / state.duration,
+    fontSizeDisplay: (state) => state.formatDisplay.length > 5 ? "25vh" : "30vh"
   },
   actions: {
     timetravel(minutes) {
@@ -12298,13 +12310,16 @@ const useTheTimeStore = defineStore("thetime", {
       this.timer_id = null;
       this.now = this.end + 1e3;
       this.running = false;
+      this.alarm_running = false;
+      this.alarm_done = true;
     },
     timer_update() {
       this.now = Date.now();
       if (this.running) {
-        if (this.remaining <= this.interval) {
-          this.timer_stop();
-          this.alarm_running = true;
+        if (!this.alarm_done && this.alarm_visual) {
+          if (this.remaining <= this.interval) {
+            this.alarm_running = true;
+          }
         }
       } else {
         this.start = this.now;
@@ -12313,6 +12328,7 @@ const useTheTimeStore = defineStore("thetime", {
     timer_start(duration_ms = null) {
       this.timer_stop();
       this.alarm_running = false;
+      this.alarm_done = false;
       if (duration_ms) {
         this.duration = duration_ms;
       }
@@ -12457,6 +12473,7 @@ var QCircularProgress = createComponent({
   }
 });
 var bell_sound = "./01__04__s-light__singing_bowl_-_single_strike_4.5eaa8205.ogg";
+var TimerDisplay_vue_vue_type_style_index_0_lang = "";
 const _hoisted_1$5 = { class: "flex flex-center" };
 const _sfc_main$9 = {
   __name: "TimerDisplay",
@@ -12476,6 +12493,8 @@ const _sfc_main$9 = {
     const color_orig = ref($q.dark.isActive);
     const remaining = ref(0);
     const interval_id = ref(null);
+    ref("blue");
+    ref("dark");
     const thetime = useTheTimeStore();
     useTimerTools(thetime.format);
     const audio_bell = new Audio(bell_sound);
@@ -12488,6 +12507,7 @@ const _sfc_main$9 = {
       if (remaining.value <= 0) {
         alarm_stop();
         thetime.alarm_running = false;
+        thetime.alarm_done = true;
       }
     };
     const alarm_start = () => {
@@ -12507,10 +12527,19 @@ const _sfc_main$9 = {
     watch(
       () => thetime.alarm_running,
       (newValue, oldValue) => {
-        console.log("watch: alarm.running", oldValue, "\u2192", newValue);
+        console.log("watch: alarm_running", oldValue, "\u2192", newValue);
         if (oldValue == false && newValue == true) {
           alarm_start();
         } else if (oldValue == true && newValue == false) {
+          alarm_stop();
+        }
+      }
+    );
+    watch(
+      () => thetime.alarm_done,
+      (newValue, oldValue) => {
+        console.log("watch: alarm_done", oldValue, "\u2192", newValue);
+        if (oldValue == false && newValue == true) {
           alarm_stop();
         }
       }
@@ -12523,20 +12552,21 @@ const _sfc_main$9 = {
         createVNode(QCircularProgress, {
           value: unref(thetime).elapsed_percentage,
           size: "99vh",
-          thickness: 1,
+          thickness: 0.1,
           "animation-speed": 0,
-          color: "blue",
+          color: unref(thetime).remaining < 0 ? "lime" : "blue",
           "track-color": "dark",
           "show-value": "",
-          "font-size": "20vh",
+          "font-size": unref(thetime).fontSizeDisplay,
           style: { "overflow": "hidden" },
-          "instant-feedback": ""
+          "instant-feedback": "",
+          class: "shadowText"
         }, {
           default: withCtx(() => [
             createTextVNode(toDisplayString(unref(thetime).remaining_formatted), 1)
           ]),
           _: 1
-        }, 8, ["value"])
+        }, 8, ["value", "color", "font-size"])
       ]);
     };
   }
@@ -12565,7 +12595,7 @@ const _sfc_main$7 = {
   name: "AboutPage",
   data() {
     return {
-      appinfo: { "name": "quasar-single-file-timer", "version": "5.0.0", "productName": "SimpleCountdownTimer ", "description": "very simple countdown / timer single-file inlined/packed quasar app", "projectUrl": "https://github.com/s-light/quasar_single_file_timer", "previewUrl": "https://s-light.github.io/quasar_single_file_timer/dist/spa/#/" }
+      appinfo: { "name": "quasar-single-file-timer", "version": "6.0.0", "productName": "SimpleCountdownTimer ", "description": "very simple countdown / timer single-file inlined/packed quasar app", "projectUrl": "https://github.com/s-light/quasar_single_file_timer", "previewUrl": "https://s-light.github.io/quasar_single_file_timer/dist/spa/#/" }
     };
   }
 };
@@ -12615,7 +12645,7 @@ const _sfc_main$6 = {
   name: "SettingsPage",
   data() {
     return {
-      appinfo: { "name": "quasar-single-file-timer", "version": "5.0.0", "productName": "SimpleCountdownTimer ", "description": "very simple countdown / timer single-file inlined/packed quasar app", "projectUrl": "https://github.com/s-light/quasar_single_file_timer", "previewUrl": "https://s-light.github.io/quasar_single_file_timer/dist/spa/#/" }
+      appinfo: { "name": "quasar-single-file-timer", "version": "6.0.0", "productName": "SimpleCountdownTimer ", "description": "very simple countdown / timer single-file inlined/packed quasar app", "projectUrl": "https://github.com/s-light/quasar_single_file_timer", "previewUrl": "https://s-light.github.io/quasar_single_file_timer/dist/spa/#/" }
     };
   }
 };
@@ -16270,10 +16300,13 @@ const _sfc_main$3 = {
     watch(
       () => props.format,
       (newValue, oldValue) => {
-        if (newValue.includes(":ss")) {
+        if (newValue == "HH:mm:ss") {
           pattern.value = "[0-9]{2}:[0-9]{2}:[0-9]{2}";
           step.value = 1;
-        } else {
+        } else if (newValue == "mm:ss") {
+          pattern.value = "[0-9]{2}:[0-9]{2}";
+          step.value = 1;
+        } else if (newValue == "HH:mm") {
           pattern.value = "[0-9]{2}:[0-9]{2}";
           step.value = 60;
         }
@@ -16346,6 +16379,11 @@ const _sfc_main$2 = {
             label: "add",
             outlined: "",
             onClick: _cache[4] || (_cache[4] = ($event) => listAddEntry())
+          }),
+          createVNode(QBtn, {
+            label: "stop",
+            outlined: "",
+            onClick: _cache[5] || (_cache[5] = ($event) => unref(thetime).timer_stop())
           })
         ]),
         createBaseVNode("section", null, [
@@ -16353,12 +16391,12 @@ const _sfc_main$2 = {
           createVNode(QBtn, {
             label: "-1min",
             outlined: "",
-            onClick: _cache[5] || (_cache[5] = ($event) => unref(thetime).timetravel(-1))
+            onClick: _cache[6] || (_cache[6] = ($event) => unref(thetime).timetravel(-1))
           }),
           createVNode(QBtn, {
             label: "+1min",
             outlined: "",
-            onClick: _cache[6] || (_cache[6] = ($event) => unref(thetime).timetravel(1))
+            onClick: _cache[7] || (_cache[7] = ($event) => unref(thetime).timetravel(1))
           })
         ])
       ]);
@@ -16382,7 +16420,7 @@ const _sfc_main$1 = defineComponent({
         leftDrawerOpen.value = !leftDrawerOpen.value;
         console.log(`leftDrawerOpen: ${leftDrawerOpen.value}`);
       },
-      appinfo: { "name": "quasar-single-file-timer", "version": "5.0.0", "productName": "SimpleCountdownTimer ", "description": "very simple countdown / timer single-file inlined/packed quasar app", "projectUrl": "https://github.com/s-light/quasar_single_file_timer", "previewUrl": "https://s-light.github.io/quasar_single_file_timer/dist/spa/#/" },
+      appinfo: { "name": "quasar-single-file-timer", "version": "6.0.0", "productName": "SimpleCountdownTimer ", "description": "very simple countdown / timer single-file inlined/packed quasar app", "projectUrl": "https://github.com/s-light/quasar_single_file_timer", "previewUrl": "https://s-light.github.io/quasar_single_file_timer/dist/spa/#/" },
       windowPortalOpen
     };
   }
@@ -27131,6 +27169,13 @@ body.body--dark {
 }body.body--dark {
   background: #000;
 }
+.body--light .shadowText {
+    text-shadow: white 0 0 0.05em, white 0 0 0.01em, white 0 0 0.01em;
+}
+.body--dark .shadowText {
+    text-shadow: black 0 0 0.05em, black 0 0 0.01em, black 0 0 0.01em;
+}
+
 .window-portal-container {
     display: none;
 }

@@ -8,12 +8,11 @@ export const useTheTimeStore = defineStore("thetime", {
         timer_id: null,
         duration: 10 * 1000,
         interval: 50,
-        format: 'HH:mm:ss',
-        formatDisplay: 'mm:ss',
-        // format: "mm:ss",
+        format: "HH:mm:ss",
+        formatDisplay: "mm:ss",
         // update helper...
         now: Date.now(),
-        // alarm..
+        alarm_visual: true,
         alarm_running: false,
         duration_list: ["00:01:00", "00:02:00", "00:05:00", "00:10:00", "00:15:00", "00:30:00"],
     }),
@@ -28,20 +27,28 @@ export const useTheTimeStore = defineStore("thetime", {
             }
             return remaining;
         },
+        remaining_formatted_number: (state) => {
+            // visual hack:
+            // if timer is running we add 1 second - this way we count down to 0...
+            let offset = 0;
+            if (state.running && state.remaining >= 0) {
+                offset -= 1000;
+            }
+            return state.remaining - offset;
+        },
         remaining_formatted: (state) => {
             // visual hack:
             // if timer is running we add 1 second - this way we count down to 0...
             const timerTools = useTimerTools(state.formatDisplay);
-            let offset = 0;
-            if (state.running) {
-                offset -= 1000;
-            }
-            return timerTools.convertDurationToTimeStr(state.remaining - offset);
+            return timerTools.convertDurationToTimeStr(state.remaining_formatted_number);
         },
         elapsed: (state) => state.now - state.start,
         // 100% = duration
         //   x  = elapsed
-        elapsed_percentage: (state) => (100 * state.elapsed) / state.duration,
+        // we use the modulor operator to get the elapsed value to a range from 0 .. duration
+        // this way it starts at 0 after finishing..
+        elapsed_percentage: (state) => (100 * (state.elapsed % state.duration)) / state.duration,
+        fontSizeDisplay: (state) => (state.formatDisplay.length > 5 ? "25vh" : "30vh"),
     },
 
     actions: {
@@ -60,6 +67,8 @@ export const useTheTimeStore = defineStore("thetime", {
             // console.log(`timer_stop this.now: ${this.now}`);
             // console.log(`timer_stop this.remaining: ${this.remaining}`);
             this.running = false;
+            this.alarm_running = false;
+            this.alarm_done = true;
         },
         timer_update() {
             this.now = Date.now();
@@ -67,11 +76,19 @@ export const useTheTimeStore = defineStore("thetime", {
             // console.log(`elapsed:   ${this.elapsed}`)
             // console.log(`remaining: ${this.remaining}`)
             if (this.running) {
-                if (this.remaining <= this.interval) {
-                    // console.log("timer_stop");
-                    this.timer_stop();
-                    // console.log("run alarm:");
-                    this.alarm_running = true;
+                // if (this.remaining <= this.interval) {
+                //     // console.log("timer_stop");
+                //     this.timer_stop();
+                //     // console.log("run alarm:");
+                //     this.alarm_running = true;
+                // }
+                if (!this.alarm_done && this.alarm_visual) {
+                    if (this.remaining <= this.interval) {
+                        // console.log("timer_stop");
+                        // this.timer_stop();
+                        // console.log("run alarm:");
+                        this.alarm_running = true;
+                    }
                 }
             } else {
                 this.start = this.now;
@@ -81,6 +98,7 @@ export const useTheTimeStore = defineStore("thetime", {
             // console.log("timer_start")
             this.timer_stop();
             this.alarm_running = false;
+            this.alarm_done = false;
             if (duration_ms) {
                 this.duration = duration_ms;
             }

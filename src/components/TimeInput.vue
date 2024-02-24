@@ -40,11 +40,14 @@ watch(
     () => props.format,
     (newValue, oldValue) => {
         // check for seconds
-        if (newValue.includes(":ss")) {
+        if (newValue == "HH:mm:ss") {
             // show seconds
             pattern.value = "[0-9]{2}:[0-9]{2}:[0-9]{2}";
             step.value = 1;
-        } else {
+        } else if (newValue == "mm:ss") {
+            pattern.value = "[0-9]{2}:[0-9]{2}";
+            step.value = 1;
+        } else if (newValue == "HH:mm") {
             pattern.value = "[0-9]{2}:[0-9]{2}";
             step.value = 60;
         }

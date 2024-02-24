@@ -1,16 +1,24 @@
 <template>
     <section class="flex flex-center">
+        <!--
+            :value="
+                thetime.remaining < 0 ? thetime.elapsed_percentage * -1 : thetime.elapsed_percentage
+                "
+                :track-color="thetime.remaining < 0 ? 'red' : 'dark'"
+                :thickness="thetime.remaining < 0 ? 0.05 : 0.1"
+         -->
         <q-circular-progress
             :value="thetime.elapsed_percentage"
             size="99vh"
-            :thickness="1.0"
+            :thickness="0.1"
             :animation-speed="0"
-            color="blue"
-            track-color="dark"
+            :color="thetime.remaining < 0 ? 'lime' : 'blue'"
+            :track-color="'dark'"
             show-value
-            font-size="20vh"
+            :font-size="thetime.fontSizeDisplay"
             style="overflow: hidden"
             instant-feedback
+            class="shadowText"
         >
             <!--
             :animation-speed="thetime.update_interval/2"
@@ -24,6 +32,7 @@
                 {{remaining_formatted}}
             -->
             {{ thetime.remaining_formatted }}
+            <!-- {{ thetime.remaining_formatted_number }}<br /> -->
         </q-circular-progress>
     </section>
 </template>
@@ -56,6 +65,9 @@ const color_orig = ref($q.dark.isActive);
 const remaining = ref(0);
 const interval_id = ref(null);
 
+const maincolor = ref("blue");
+const trackcolor = ref("dark");
+
 // const thetime = toRef(props, 'thetime')
 const thetime = useTheTimeStore();
 
@@ -78,6 +90,7 @@ const alarmUpdate = () => {
     if (remaining.value <= 0) {
         alarm_stop();
         thetime.alarm_running = false;
+        thetime.alarm_done = true;
     }
 };
 
@@ -109,10 +122,19 @@ const alarm_stop = () => {
 watch(
     () => thetime.alarm_running,
     (newValue, oldValue) => {
-        console.log("watch: alarm.running", oldValue, "→", newValue);
+        console.log("watch: alarm_running", oldValue, "→", newValue);
         if (oldValue == false && newValue == true) {
             alarm_start();
         } else if (oldValue == true && newValue == false) {
+            alarm_stop();
+        }
+    }
+);
+watch(
+    () => thetime.alarm_done,
+    (newValue, oldValue) => {
+        console.log("watch: alarm_done", oldValue, "→", newValue);
+        if (oldValue == false && newValue == true) {
             alarm_stop();
         }
     }
@@ -138,3 +160,13 @@ onUnmounted(() => {
 // cancelAnimationFrame(handle)
 // })
 </script>
+
+<style lang="css">
+.body--light .shadowText {
+    text-shadow: white 0 0 0.05em, white 0 0 0.01em, white 0 0 0.01em;
+}
+
+.body--dark .shadowText {
+    text-shadow: black 0 0 0.05em, black 0 0 0.01em, black 0 0 0.01em;
+}
+</style>
